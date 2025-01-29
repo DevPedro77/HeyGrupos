@@ -8,12 +8,62 @@ import {
   SafeAreaView,
   Platform,
 } from 'react-native';
+import auth from '@react-native-firebase/auth';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SignIn(){
+  const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [type, setType] = useState(false);
+
+  // criando a função de login
+
+  function handleLogin(){
+    if(type){
+      if(name === '' || email === '' || password === '') {return;}
+
+      auth().createUserWithEmailAndPassword(email, password)
+      .then((user) => {
+        user.user.updateProfile({
+          displayName: name,
+        })
+        .then( () => {
+          navigation.goBack();
+        });
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use') {
+          console.log('Esse email já está em uso!');
+        }
+
+        if (error.code === 'auth/invalid-email') {
+          console.log('Esse email é invalido!');
+        }
+
+        console.error(error);
+      });
+
+    } else {
+      auth().signInWithEmailAndPassword(email, password)
+      .then( () => {
+        navigation.goBack();
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use') {
+          console.log('Esse email já está em uso!');
+        }
+
+        if (error.code === 'auth/invalid-email') {
+          console.log('Esse email é invalido!');
+        }
+
+        console.error(error);
+      });
+
+    }
+  }
 
 
   return(
@@ -53,6 +103,7 @@ export default function SignIn(){
 
       <TouchableOpacity
         style={styles.button}
+        onPress={handleLogin}
       >
         <Text style={styles.buttonText }>
           {type ? 'Cadastrar' : 'Acessar'}
@@ -91,7 +142,7 @@ const styles = StyleSheet.create({
     height: 50,
   },
   button: {
-    backgroundColor: '#51C880',
+    backgroundColor: '#2E54D4',
     width: '90%',
     borderRadius: 6,
     height: 50,
