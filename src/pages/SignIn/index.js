@@ -13,18 +13,26 @@ export default function SignIn(){
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [type, setType] = useState(false);
+
+
   return(
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>HeyGrupos</Text>
       <Text style={{marginBottom: 20}}>Ajude, colabore e faça networking!</Text>
 
-      <TextInput
+
+      {type && (
+        <TextInput
         value={name}
         onChangeText={ (text) => setName(text)}
         placeholder="Digite seu nome"
         placeholderTextColor="#99999B"
         style={styles.input}
       />
+      )}
+
+
 
       <TextInput
         value={email}
@@ -47,12 +55,14 @@ export default function SignIn(){
         style={styles.button}
       >
         <Text style={styles.buttonText }>
-          Login
+          {type ? 'Cadastrar' : 'Acessar'}
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity>
-        <Text>Criar uma nova conta</Text>
+      <TouchableOpacity onPress={() => setType(!type)}>
+        <Text>
+          {type ? 'já possuo uma conta' : 'Criar uma nova conta'}
+        </Text>
       </TouchableOpacity>
 
     </SafeAreaView>
