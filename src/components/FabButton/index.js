@@ -6,10 +6,10 @@ import {
   StyleSheet,
 } from 'react-native';
 
-export default function FabButton({setVisble}){
+export default function FabButton({setVisible}){
 
   function handleNavigateButton(){
-    setVisble();
+    setVisible();
   }
   return(
     <TouchableOpacity

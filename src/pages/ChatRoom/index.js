@@ -41,7 +41,7 @@
           <FabButton setVisible={() => setModalVisible(true)}/>
 
           <Modal visible={modalVisible} animationType="slide" transparent={true}>
-            <ModalNewRoom/>
+            <ModalNewRoom setVisible={() => setModalVisible(false)}/>
           </Modal>
 
         </SafeAreaView>
