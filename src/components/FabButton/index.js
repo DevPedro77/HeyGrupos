@@ -5,11 +5,13 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-export default function FabButton({setVisible}){
+export default function FabButton({setVisible, statusUser}){
+  const navigation = useNavigation();
 
   function handleNavigateButton(){
-    setVisible();
+    statusUser ? setVisible() : navigation.navigate("SignIn");
   }
   return(
     <TouchableOpacity
