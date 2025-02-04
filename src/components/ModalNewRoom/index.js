@@ -18,7 +18,28 @@ export default function ModalNewRoom({setVisible, setUpdate}){
 
   function handleCreateButton(){
     if(room === '') {return;}
-    createRoom();
+
+    // deixar o user criar apenas 3 salas
+    firestore()
+    .collection('MESSAGE_THREADS')
+    .get()
+    .then((snapshot) =>{
+      let myRooms = 0;
+
+      snapshot.docs.map(docItem => {
+        if(docItem.data().owner === user.uid){
+          myRooms += 1;
+        }
+      })
+
+      if(myRooms >= 3){
+        alert('Você atingiu o limite de grupos por usuario')
+      } else{
+        createRoom();
+
+      }
+    })
+
   }
 
   function createRoom(){
