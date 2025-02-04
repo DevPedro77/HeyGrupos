@@ -1,17 +1,32 @@
     import React, {useState, useEffect} from 'react';
-    import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Modal} from 'react-native';
+    import {
+      View, 
+      Text, 
+      StyleSheet, 
+      TouchableOpacity, 
+      SafeAreaView, 
+      Modal, 
+      ActivityIndicator,
+      FlatList
+    } from 'react-native';
+
     import { useNavigation, useIsFocused} from '@react-navigation/native';
     import Icon from '@react-native-vector-icons/evil-icons';
     import auth from '@react-native-firebase/auth';
+    import firestore from '@react-native-firebase/firestore'
 
     import FabButton from '../../components/FabButton';
     import ModalNewRoom from '../../components/ModalNewRoom';
+    import ChatList from '../../components/ChatList';
 
     export default function ChatRoom() {
       const navigation = useNavigation();
       const isFocused = useIsFocused();
       const [user, setUser] = useState(null);
       const [modalVisible, setModalVisible] = useState(false);
+
+      const [threads, setThreads] = useState([]);
+      const [loading, setLoading] = useState(true);
 
       useEffect(()=>{
         const hasUser = auth().currentUser ? auth().currentUser.toJSON() : null;
@@ -20,6 +35,45 @@
 
 
       },[isFocused]);
+
+    useEffect(()=>{
+    let isActive = true;
+
+    function getChats(){
+      firestore()
+      .collection('MESSAGE_THREADS')
+      .orderBy('lastMessage.createdAt', 'desc')
+      .limit(10)
+      .get()
+      .then((snapshot)=>{
+        const threads = snapshot.docs.map( documentSnapshot => {
+          return {
+            _id:  documentSnapshot.id,
+            name: '',
+            lastMessage: { text: '' },
+            ...documentSnapshot.data()
+          }
+        })
+
+        if(isActive){
+          setThreads(threads);
+          setLoading(false);
+          console.log(threads)
+        }
+
+
+      })
+
+    }
+
+    getChats();
+
+
+    return () => {
+       isActive = false;
+    }
+
+  }, [isFocused]);
 
         function handleSignOut(){
           auth()
@@ -31,6 +85,12 @@
           .catch((err) =>{
             console.log('Error', err);
           });
+        }
+
+        if(loading){
+          return(
+            <ActivityIndicator size='large' color={'#ddd'}/>
+          )
         }
       return (
         <SafeAreaView style={styles.container}>
@@ -50,6 +110,14 @@
               <Icon name="search" color="#fff" size={28} />
             </TouchableOpacity>
           </View>
+
+          <FlatList
+            data={threads}
+            keyExtractor={item => item._id}
+            renderItem={({item}) => (
+              <ChatList data={item}/>
+            )}
+          />
 
           <FabButton setVisible={() => setModalVisible(true)} statusUser={user}/>
 
