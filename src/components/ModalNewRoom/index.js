@@ -11,7 +11,7 @@ import {
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
-export default function ModalNewRoom({setVisible}){
+export default function ModalNewRoom({setVisible, setUpdate}){
   const[room, setRoom] = useState("");
 
   const user = auth().currentUser.toJSON();
@@ -41,7 +41,7 @@ export default function ModalNewRoom({setVisible}){
       })
       .then(() => {
         setVisible();
-        console.log(room)
+        setUpdate();
 
       });
 

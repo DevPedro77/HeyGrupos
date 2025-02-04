@@ -27,6 +27,7 @@
 
       const [threads, setThreads] = useState([]);
       const [loading, setLoading] = useState(true);
+      const[updateModal, setUpdateModal] = useState(false)
 
       useEffect(()=>{
         const hasUser = auth().currentUser ? auth().currentUser.toJSON() : null;
@@ -73,7 +74,7 @@
        isActive = false;
     }
 
-  }, [isFocused]);
+  }, [isFocused, updateModal]);
 
         function handleSignOut(){
           auth()
@@ -122,7 +123,10 @@
           <FabButton setVisible={() => setModalVisible(true)} statusUser={user}/>
 
           <Modal visible={modalVisible} animationType="slide" transparent={true}>
-            <ModalNewRoom setVisible={() => setModalVisible(false)}/>
+            <ModalNewRoom
+              setVisible={() => setModalVisible(false)}
+              setUpdate={ () => setUpdateModal(!updateModal)}
+              />
           </Modal>
 
         </SafeAreaView>
