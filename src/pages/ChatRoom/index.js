@@ -7,7 +7,8 @@
       SafeAreaView, 
       Modal, 
       ActivityIndicator,
-      FlatList
+      FlatList,
+      Alert
     } from 'react-native';
 
     import { useNavigation, useIsFocused} from '@react-navigation/native';
@@ -88,6 +89,40 @@
           });
         }
 
+        function deleteRoom(ownerId, idRoom){
+          // verificando se o usuario tem permissão para deletar a sela 
+          if(ownerId !== user?.uid ) return;
+
+          Alert.alert(
+            "Atenção!",
+            "Você tem certeza que deseja apagar essa sala",
+
+            [
+              {
+                text: 'Cancelar',
+                onPress: () => {},
+                style: 'cancel'
+              },
+              {
+                text: 'Deletar',
+                onPress: () => deletarSala(idRoom)
+              }
+            ]
+          )
+
+        }
+
+        // deletando sala
+        async function deletarSala(idRoom){
+          await firestore()
+          .collection('MESSAGE_THREADS')
+          .doc(idRoom)
+          .delete();
+
+
+          setUpdateModal(!updateModal)
+        }
+
         if(loading){
           return(
             <ActivityIndicator size='large' color={'#ddd'}/>
@@ -116,7 +151,7 @@
             data={threads}
             keyExtractor={item => item._id}
             renderItem={({item}) => (
-              <ChatList data={item}/>
+              <ChatList data={item} deleteRoom={() => deleteRoom( item.owner, item._id)}/>
             )}
           />
 
