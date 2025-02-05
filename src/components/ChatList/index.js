@@ -1,9 +1,20 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-function ChatList({ data, deleteRoom}){
+function ChatList({ data, deleteRoom, statusUser}){
+  const navigation = useNavigation();
+
+  function openChat(){
+    if(statusUser){
+      navigation.navigate('Messages', {thread: data});
+
+    } else{
+      navigation.navigate('SignIn');
+    }
+  }
   return(
-    <TouchableOpacity onPress={ () => {}} onLongPress={deleteRoom}>
+    <TouchableOpacity onPress={openChat} onLongPress={deleteRoom}>
       <View style={styles.row}>
         <View style={styles.content}>
           <View style={styles.header}>
@@ -17,7 +28,7 @@ function ChatList({ data, deleteRoom}){
         </View>
       </View>
     </TouchableOpacity>
-  )
+  );
 }
 
 export default ChatList;
@@ -35,7 +46,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   header:{
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   contentText:{
     color: '#c1c1c1',
@@ -45,6 +56,6 @@ const styles = StyleSheet.create({
   nameText:{
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#000'
-  }
-})  
+    color: '#000',
+  },
+});

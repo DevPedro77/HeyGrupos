@@ -1,20 +1,20 @@
     import React, {useState, useEffect} from 'react';
     import {
-      View, 
-      Text, 
-      StyleSheet, 
-      TouchableOpacity, 
-      SafeAreaView, 
-      Modal, 
+      View,
+      Text,
+      StyleSheet,
+      TouchableOpacity,
+      SafeAreaView,
+      Modal,
       ActivityIndicator,
       FlatList,
-      Alert
+      Alert,
     } from 'react-native';
 
     import { useNavigation, useIsFocused} from '@react-navigation/native';
     import Icon from '@react-native-vector-icons/evil-icons';
     import auth from '@react-native-firebase/auth';
-    import firestore from '@react-native-firebase/firestore'
+    import firestore from '@react-native-firebase/firestore';
 
     import FabButton from '../../components/FabButton';
     import ModalNewRoom from '../../components/ModalNewRoom';
@@ -28,7 +28,7 @@
 
       const [threads, setThreads] = useState([]);
       const [loading, setLoading] = useState(true);
-      const[updateModal, setUpdateModal] = useState(false)
+      const[updateModal, setUpdateModal] = useState(false);
 
       useEffect(()=>{
         const hasUser = auth().currentUser ? auth().currentUser.toJSON() : null;
@@ -53,18 +53,18 @@
             _id:  documentSnapshot.id,
             name: '',
             lastMessage: { text: '' },
-            ...documentSnapshot.data()
-          }
-        })
+            ...documentSnapshot.data(),
+          };
+        });
 
         if(isActive){
           setThreads(threads);
           setLoading(false);
-          console.log(threads)
+          console.log(threads);
         }
 
 
-      })
+      });
 
     }
 
@@ -73,7 +73,7 @@
 
     return () => {
        isActive = false;
-    }
+    };
 
   }, [isFocused, updateModal]);
 
@@ -90,25 +90,25 @@
         }
 
         function deleteRoom(ownerId, idRoom){
-          // verificando se o usuario tem permissão para deletar a sela 
-          if(ownerId !== user?.uid ) return;
+          // verificando se o usuario tem permissão para deletar a sela
+          if(ownerId !== user?.uid ) {return;}
 
           Alert.alert(
-            "Atenção!",
-            "Você tem certeza que deseja apagar essa sala",
+            'Atenção!',
+            'Você tem certeza que deseja apagar essa sala',
 
             [
               {
                 text: 'Cancelar',
                 onPress: () => {},
-                style: 'cancel'
+                style: 'cancel',
               },
               {
                 text: 'Deletar',
-                onPress: () => deletarSala(idRoom)
-              }
+                onPress: () => deletarSala(idRoom),
+              },
             ]
-          )
+          );
 
         }
 
@@ -120,13 +120,13 @@
           .delete();
 
 
-          setUpdateModal(!updateModal)
+          setUpdateModal(!updateModal);
         }
 
         if(loading){
           return(
-            <ActivityIndicator size='large' color={'#ddd'}/>
-          )
+            <ActivityIndicator size="large" color={'#ddd'}/>
+          );
         }
       return (
         <SafeAreaView style={styles.container}>
@@ -151,7 +151,7 @@
             data={threads}
             keyExtractor={item => item._id}
             renderItem={({item}) => (
-              <ChatList data={item} deleteRoom={() => deleteRoom( item.owner, item._id)}/>
+              <ChatList data={item} deleteRoom={() => deleteRoom( item.owner, item._id)} statusUser={user}/>
             )}
           />
 
