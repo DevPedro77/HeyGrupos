@@ -22,5 +22,5 @@ Confira a apresentação do projeto no LinkedIn:
 
 1. Clone este repositório:  
    ```sh
-   git clone https://github.com/seu-usuario/chatapp.git
+   git clone https://github.com/DevPedro77/HeyGrupos?tab=readme-ov-file
    cd chatapp
