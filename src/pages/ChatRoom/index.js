@@ -142,7 +142,7 @@
               <Text style={styles.title}>Grupos</Text>
             </View>
 
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Search')}>
               <Icon name="search" color="#fff" size={28} />
             </TouchableOpacity>
           </View>

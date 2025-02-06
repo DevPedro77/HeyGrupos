@@ -8,7 +8,7 @@ function ChatMessagesList({ data }) {
 
   const myMessages = useMemo(() => {
     return data?.user?._id === user?.uid;
-  }, [data]);
+  }, [data?.user?._id, user?.uid]);
 
   return (
     <View style={styles.container}>
@@ -34,7 +34,7 @@ function ChatMessagesList({ data }) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 10,
+    padding: 10,
   },
   messageBox: {
     borderRadius: 5,

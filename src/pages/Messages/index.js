@@ -51,7 +51,40 @@ export default function Messages({route}){
       return () => chatMessages();
 
 
-    },[]);
+    },[thread._id]);
+
+    async function enviarMenssagem(){
+      if(input === '') {return;}
+
+      await firestore()
+      .collection('MESSAGE_THREADS')
+      .doc(thread._id)
+      .collection('MESSAGES')
+      .add({
+        text: input,
+        createdAt: firestore.FieldValue.serverTimestamp(),
+        user: {
+          _id: user.uid,
+          displayName: user.displayName,
+        },
+      });
+
+      await firestore()
+      .collection('MESSAGE_THREADS')
+      .doc(thread._id)
+      .set(
+        {
+          lastMessage: {
+            text: input,
+            createdAt: firestore.FieldValue.serverTimestamp(),
+          },
+        },
+        { merge: true }
+      );
+
+      setInput('');
+
+    }
 
   return(
     <SafeAreaView style={styles.container}>
@@ -60,6 +93,7 @@ export default function Messages({route}){
         data={messages}
         keyExtractor={(item, index) => item?._id?.toString() || index.toString()}
         renderItem={({ item }) => item?._id ? <ChatMessagesList data={item} /> : null}
+        inverted={true}
       />
 
       <KeyboardAvoidingView
@@ -78,9 +112,9 @@ export default function Messages({route}){
                 />
             </View>
 
-            <TouchableOpacity>
+            <TouchableOpacity onPress={enviarMenssagem}>
               <View style={styles.buttonContainer}>
-                <Icon name="sc-telegram" color="#fff" size={25}/>
+                <Icon name="sc-telegram" color="#fff" size={30}/>
               </View>
             </TouchableOpacity>
         </View>
