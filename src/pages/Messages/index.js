@@ -1,11 +1,91 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import { View, Text, StyleSheet, SafeAreaView, FlatList, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity} from 'react-native';
 
-export default function Messages(){
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import Icon from '@react-native-vector-icons/evil-icons';
+
+import ChatMessagesList from '../../components/ChatMessages';
+
+export default function Messages({route}){
+
+  const {thread} = route.params;
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+
+  const user = auth().currentUser.toJSON();
+
+    useEffect( ()=>{
+
+      const chatMessages = firestore().collection('MESSAGE_THREADS')
+      .doc(thread._id)
+      .collection('MESSAGES')
+      .orderBy('createdAt', 'desc')
+      .onSnapshot(docSnapshot => {
+        const messages = docSnapshot.docs.map( doc => {
+          const firebaseData = doc.data();
+
+          const data = {
+            _id: doc.id,
+            text: '',
+            createdAt: firestore.FieldValue.serverTimestamp(),
+            ...firebaseData,
+          };
+
+          if(!firebaseData.system){
+            data.user = {
+              ...firebaseData.user,
+              name: firebaseData.user.displayName,
+            };
+          }
+
+          return data;
+
+
+        });
+
+        setMessages(messages);
+        console.log(messages);
+      });
+
+      return () => chatMessages();
+
+
+    },[]);
+
   return(
-    <View style={styles.container}>
-      <Text>Tela de Mensagens</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+        <FlatList
+        styles={{width: '100%'}}
+        data={messages}
+        keyExtractor={(item, index) => item?._id?.toString() || index.toString()}
+        renderItem={({ item }) => item?._id ? <ChatMessagesList data={item} /> : null}
+      />
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{width: '100%'}}
+        keyboardVerticalOffset={100}
+      >
+        <View style={styles.containerInput}>
+            <View style={styles.maincontainerInput}>
+                <TextInput
+                  placeholder="digite sua mensagem"
+                  style={styles.textInput}
+                  value={input}
+                  onChangeText={ (text) => setInput(text)}
+                  multiline={true}
+                />
+            </View>
+
+            <TouchableOpacity>
+              <View style={styles.buttonContainer}>
+                <Icon name="sc-telegram" color="#fff" size={25}/>
+              </View>
+            </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
@@ -15,5 +95,33 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  containerInput: {
+    flexDirection: 'row',
+    margin: 10,
+    alignItems: 'flex-end',
+  },
+  maincontainerInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    flex: 1,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  textInput:{
+    flex: 1,
+    marginHorizontal: 10,
+    maxHeight: 120,
+    minHeight: 48,
+
+  },
+  buttonContainer:{
+    backgroundColor: '#51C880',
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 48,
+    borderRadius: 25,
   },
 });
